@@ -195,9 +195,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5276d8e8fbf72c148b27a8127d2a4080, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _clickEvent: {fileID: 648874456}
+  clickEvent: {fileID: 648874456}
   target: {fileID: 777192366}
   moveSpeed: 5
+  movePosition: {x: 0, y: 0, z: 0}
 --- !u!136 &777192363
 CapsuleCollider:
   m_ObjectHideFlags: 0
