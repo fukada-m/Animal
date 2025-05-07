@@ -16,6 +16,15 @@ public class OnClickMove : MonoBehaviour
 
     void Awake(){
         clickEvent.OnClick += PlayerMove ;
+        if (clickEvent == null){
+            throw new System.Exception("ClickEventが指定されていません。");
+        }
+        if (target == null) {
+            throw new System.Exception("targetが指定されていません。");
+        }
+        if (moveSpeed == 0){
+            throw new System.Exception("moveSpeedが0になっています。");
+        }
     }
 
     // クリックされた座標を元にUpdate()内でターゲットを移動させている。
