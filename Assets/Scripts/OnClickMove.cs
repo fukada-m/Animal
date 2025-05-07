@@ -15,10 +15,10 @@ public class OnClickMove : MonoBehaviour
     Vector3 movePosition;
 
     void Awake(){
-        clickEvent.OnClick += PlayerMove ;
         if (clickEvent == null){
             throw new System.Exception("ClickEventが指定されていません。");
         }
+        clickEvent.OnClick += PlayerMove ;
         if (target == null) {
             throw new System.Exception("targetが指定されていません。");
         }
