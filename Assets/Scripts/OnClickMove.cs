@@ -32,7 +32,7 @@ public class OnClickMove : MonoBehaviour
         movePosition = GetMousePosition();
     }
 
-    // クリックした座標のVector3を返す。ただし、yは常に0
+    // クリックした座標のVector3を返す。
     Vector3 GetMousePosition(){
         // 1) 画面上のクリック位置からレイを飛ばす。レイキャストの最大距離は100f
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
