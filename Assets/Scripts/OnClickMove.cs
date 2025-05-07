@@ -8,10 +8,6 @@ public class OnClickMove : MonoBehaviour
     ClickEvent clickEvent;
 
     [SerializeField]
-    [Tooltip("移動させたいオブジェクト")]
-    Transform target;
-
-    [SerializeField]
     float moveSpeed;
 
     Vector3 movePosition;
@@ -21,13 +17,10 @@ public class OnClickMove : MonoBehaviour
             throw new System.Exception("ClickEventが指定されていません。");
         }
         clickEvent.OnClick.Subscribe(_ => SetMovePosition()).AddTo(this);
-        if (target == null) {
-            throw new System.Exception("targetが指定されていません。");
-        }
         if (moveSpeed == 0){
             throw new System.Exception("moveSpeedが0になっています。");
         }
-        movePosition = target.position;
+        movePosition = transform.position;
         
     }
 
@@ -52,7 +45,7 @@ public class OnClickMove : MonoBehaviour
         else
         {
             Debug.Log("何にも当たりませんでした");
-            return target.position;
+            return transform.position;
         }
     }
 
@@ -63,16 +56,16 @@ public class OnClickMove : MonoBehaviour
     // 実際にプレイヤーを移動させる処理。速度はmoveSpeedの値で変わる
     void Move(){
         // 目標への方向ベクトルを計算
-        Vector3 dir = movePosition - target.position;
+        Vector3 dir = movePosition - transform.position;
         // y軸方向には回転させたくないから0にしている
         dir.y = 0;
-        if (dir.sqrMagnitude > 0.001f && target.CompareTag("Player")){
-            target.rotation = Quaternion.LookRotation(dir);
-        }else if (dir.sqrMagnitude > 0.001f && target.CompareTag("Player") == false){
-            target.position = new Vector3(target.position.x, 20f, target.position.z);
+        if (dir.sqrMagnitude > 0.001f && transform.CompareTag("Player")){
+            transform.rotation = Quaternion.LookRotation(dir);
+        }else if (dir.sqrMagnitude > 0.001f && transform.CompareTag("Player") == false){
+            transform.position = new Vector3(transform.position.x, 20f, transform.position.z);
         }
-        if (target.position != movePosition) {
-            target.position = Vector3.MoveTowards(target.position, movePosition, moveSpeed * Time.deltaTime);
+        if (transform.position != movePosition) {
+            transform.position = Vector3.MoveTowards(transform.position, movePosition, moveSpeed * Time.deltaTime);
         }
     }
 }
