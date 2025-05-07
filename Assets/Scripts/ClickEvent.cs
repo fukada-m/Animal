@@ -1,13 +1,15 @@
 using UnityEngine;
 using System;
+using UniRx;
 
 public class ClickEvent : MonoBehaviour
 {
-    public event Action OnClick = delegate {};
+    Subject<Unit> onClick = new Subject<Unit>();
+    public IObservable<Unit> OnClick => onClick;
 
     void Update(){
         if (Input.GetMouseButtonDown(0)){
-            OnClick();
+            onClick.OnNext(Unit.Default);
         }
     }
 }

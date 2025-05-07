@@ -1,5 +1,6 @@
 using Unity.Mathematics;
 using UnityEngine;
+using UniRx;
 
 public class OnClickMove : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class OnClickMove : MonoBehaviour
         if (clickEvent == null){
             throw new System.Exception("ClickEventが指定されていません。");
         }
-        clickEvent.OnClick += SetMovePosition ;
+        clickEvent.OnClick.Subscribe(_ => SetMovePosition()).AddTo(this);
         if (target == null) {
             throw new System.Exception("targetが指定されていません。");
         }
@@ -31,7 +32,7 @@ public class OnClickMove : MonoBehaviour
     }
 
     // クリックされた座標を元にUpdate()内でターゲットを移動させている。
-    public void SetMovePosition(){
+    void SetMovePosition(){
         movePosition = GetMousePosition();
     }
 
