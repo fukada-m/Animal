@@ -185,7 +185,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 22dd46fd417ec3646b62ddd8caddab34, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -242,6 +242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1182198087b6fdf4aad06982e6271de1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clickEvent: {fileID: 648874456}
 --- !u!1 &648874455
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,7 +455,7 @@ GameObject:
   - component: {fileID: 1271076627}
   - component: {fileID: 1271076626}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
