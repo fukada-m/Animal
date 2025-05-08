@@ -1,14 +1,17 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class OnTriggerEvent : MonoBehaviour
 {
-    [SerializeField]
     NavMeshAgent agent;
 
     Transform target;
 
+    GameObject leader;
+
     void Start(){
+        agent = GetComponent<NavMeshAgent>();
         if (agent == null){
             throw new System.Exception("Nav Mesh Agentをアタッチしてください");
         }
@@ -17,30 +20,21 @@ public class OnTriggerEvent : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log($"[Trigger Enter] {other.gameObject.name} が入りました");
-        target = null;
-    }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log($"[Trigger Enter] {collision.gameObject.name} が入りました");
-        target = null;
+        if (other.tag == "Player"){
+            if (leader == null && leader != other.gameObject){
+                leader = other.gameObject;
+                var player = other.GetComponent<Player>();
+                if(player == null){throw new System.Exception("PlayerにPlayerクラスをアタッチしよう");}
+                target = player.LastFrend.transform;
+                player.LastFrend = this.gameObject;
+            }
+        }
     }
 
     // トリガーから出た瞬間に呼ばれる
     private void OnTriggerExit(Collider other)
     {
         Debug.Log($"[Trigger Exit] {other.gameObject.name} が出ました");
-        if (other.tag == "Player"){
-            target = other.transform;
-        }
-    }
-
-    void OnCollisionExit(Collision collision)
-    {
-         Debug.Log($"[Trigger Exit] {collision.gameObject.name} が出ました");
-        if (collision.gameObject.tag == "Player"){
-            target = collision.transform;
-        }
     }
 
     void Update()
