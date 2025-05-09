@@ -2,8 +2,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class OnTriggerEvent : MonoBehaviour
+public class RegisterTarget : MonoBehaviour
 {
+    readonly float targetInterval = 3;
     NavMeshAgent agent;
 
     Transform target;
@@ -16,13 +17,14 @@ public class OnTriggerEvent : MonoBehaviour
             throw new System.Exception("Nav Mesh Agentをアタッチしてください");
         }
     }
-    // トリガーに入った瞬間に呼ばれる
+    // リーダーを登録してリーダーの最後尾にいるオブジェクトについていく
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log($"[Trigger Enter] {other.gameObject.name} が入りました");
-        if (other.tag == "Player"){
-            if (leader == null && leader != other.gameObject){
-                leader = other.gameObject;
+        if (gameObject.tag == "Player"){
+            // リーダーが後退したときにtargetを登録する
+            if (leader == null && leader != gameObject){
+                leader = gameObject;
                 var player = other.GetComponent<Player>();
                 if(player == null){throw new System.Exception("PlayerにPlayerクラスをアタッチしよう");}
                 target = player.LastFrend.transform;
@@ -39,12 +41,16 @@ public class OnTriggerEvent : MonoBehaviour
 
     void Update()
     {
-        if (target != null){
-            agent.SetDestination(target.position);
-        }
-        if (target != null && Vector3.Distance(transform.position, target.position) > 3){
+        Fllow();
+    }
+
+    // targetとの距離がtargetInterval以上離れたら追跡する。
+    void Fllow(){
+        if (target == null) {return;}
+        agent.SetDestination(target.position);
+        if (Vector3.Distance(transform.position, target.position) > targetInterval){
             agent.isStopped = false;
-        }else if(target != null && Vector3.Distance(transform.position, target.position) <= 3) {
+        }else {
             agent.isStopped = true;
         }
     }
