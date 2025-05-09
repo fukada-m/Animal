@@ -9,7 +9,7 @@ public class RegisterTarget : MonoBehaviour
 
     Transform target;
 
-    GameObject leader;
+    GameObject currentLeader;
 
     void Start(){
         agent = GetComponent<NavMeshAgent>();
@@ -17,15 +17,16 @@ public class RegisterTarget : MonoBehaviour
             throw new System.Exception("Nav Mesh Agentをアタッチしてください");
         }
     }
+    // TODOUniRXを使ってイベント化する
     // リーダーを登録してリーダーの最後尾にいるオブジェクトについていく
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log($"[Trigger Enter] {other.gameObject.name} が入りました");
-        if (gameObject.tag == "Player"){
-            // リーダーが後退したときにtargetを登録する
-            if (leader == null && leader != gameObject){
-                leader = gameObject;
-                var player = other.GetComponent<Player>();
+        if (other.gameObject.tag == "Player"){
+            // リーダーが変わっていればをリーダーを交代してその最後尾を自分のターゲットにセットする。そして、自分が最後尾になる。
+            if (IsChange(other.gameObject, currentLeader)){
+                currentLeader = other.gameObject;
+                var player = currentLeader.GetComponent<Player>();
                 if(player == null){throw new System.Exception("PlayerにPlayerクラスをアタッチしよう");}
                 target = player.LastFrend.transform;
                 player.LastFrend = this.gameObject;
@@ -33,10 +34,13 @@ public class RegisterTarget : MonoBehaviour
         }
     }
 
-    // トリガーから出た瞬間に呼ばれる
-    private void OnTriggerExit(Collider other)
-    {
-        Debug.Log($"[Trigger Exit] {other.gameObject.name} が出ました");
+    bool IsChange(GameObject leader, GameObject currentleader){
+        if(currentLeader == null)return true;
+        if (currentleader == leader){
+            return false;
+        } else{
+            return true;
+        }
     }
 
     void Update()
