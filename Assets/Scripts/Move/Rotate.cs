@@ -3,7 +3,6 @@ using UniRx;
 
 public class Rotate : MonoBehaviour
 {
-    [SerializeField]
     ClickEvent clickEvent;
     MousePosition mousePosition = new MousePosition();
 
@@ -12,6 +11,7 @@ public class Rotate : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        clickEvent = GameObject.Find("Event").GetComponent<ClickEvent>();
         if (clickEvent == null){
             throw new System.Exception("ClickEventが指定されていません。");
         }       

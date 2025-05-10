@@ -121,9 +121,12 @@ GameObject:
   - component: {fileID: 3366125201921325343}
   - component: {fileID: 7925576641729257838}
   - component: {fileID: 4280678183930035378}
-  - component: {fileID: 3182738477839748725}
   - component: {fileID: 379186780456496943}
   - component: {fileID: 4286602865747224156}
+  - component: {fileID: -6783220044145024628}
+  - component: {fileID: 1061958928575313173}
+  - component: {fileID: 6037277416701025911}
+  - component: {fileID: 2128775731362047096}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -250,21 +253,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3182738477839748725
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7387634432613763421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1928666e843e3de40830a9260aa233cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  clickEvent: {fileID: 0}
-  moveSpeed: 5
-  yAxis: 1
 --- !u!114 &379186780456496943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,7 +265,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1067210ac1978244eacd31d525ca5d80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clickEvent: {fileID: 0}
 --- !u!114 &4286602865747224156
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,3 +277,108 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01a9a2adffb69e14d89e933f673ae3c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-6783220044145024628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7387634432613763421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 1
+  AllowStateAuthorityOverride: 1
+  AoiPositionSource: {fileID: 0}
+  Flags: 2305
+  NetworkGuid:
+    RawGuidValue: 5412ff68c0a74c84095a0c1e5a47b031
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1061958928575313173}
+  - {fileID: 2128775731362047096}
+  SimulationBehaviours: []
+--- !u!114 &1061958928575313173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7387634432613763421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1928666e843e3de40830a9260aa233cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  moveSpeed: 5
+  yAxis: 1
+--- !u!143 &6037277416701025911
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7387634432613763421}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2128775731362047096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7387634432613763421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 378411a89480da345945c2f888327a2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WordOffset: 0
+  WordCount: 0
+  _interpolationDataSource: 0
+  InterpolationSpace: 0
+  InterpolationTarget: {fileID: 0}
+  InterpolateErrorCorrection: 1
+  InterpolatedErrorCorrectionSettings:
+    MinRate: 3.3
+    MaxRate: 10
+    PosBlendStart: 0.25
+    PosBlendEnd: 1
+    PosMinCorrection: 0.025
+    PosTeleportDistance: 2
+    RotBlendStart: 0.1
+    RotBlendEnd: 0.5
+    RotTeleportRadians: 1.5
+  UseLegacySharedModeInterpolation: 0
+  TargetInterpolationDelay: 0.03
+  gravity: -20
+  jumpImpulse: 8
+  acceleration: 10
+  braking: 10
+  maxSpeed: 2
+  rotationSpeed: 15
+  _IsGrounded: 0
+  _Velocity: {x: 0, y: 0, z: 0}

@@ -1,9 +1,9 @@
 using UnityEngine;
 using UniRx;
+using Fusion;
 
-public class Move : MonoBehaviour
+public class Move : NetworkBehaviour
 {
-    [SerializeField]
     ClickEvent clickEvent;
 
     [SerializeField]
@@ -19,6 +19,7 @@ public class Move : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        clickEvent = GameObject.Find("Event").GetComponent<ClickEvent>();
         if (clickEvent == null){
             throw new System.Exception("ClickEventが指定されていません。");
         }
@@ -39,7 +40,7 @@ public class Move : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public override void FixedUpdateNetwork()
     {
         // 移動する処理
         transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
