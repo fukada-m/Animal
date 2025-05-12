@@ -27,7 +27,7 @@ public class Player : NetworkBehaviour
         if(GetInput(out NetworkInputData data))
         {
             // 移動する処理
-            transform.position = Vector3.MoveTowards(transform.position, data.Direction, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(data.Direction.x, yAxis, data.Direction.z), moveSpeed * Time.deltaTime);
             // 回転する処理
             // 目標への方向ベクトルを計算
             Vector3 dir = data.Direction - transform.position;
