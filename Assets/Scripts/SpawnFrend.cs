@@ -1,20 +1,25 @@
 using System.Collections;
 using UnityEngine;
+using Fusion;
+
 
 public class SpawnFrend : MonoBehaviour
 {
     [SerializeField]
     float spawnInterval;
-    GameObject frendPrefab;
+    [SerializeField]
+    NetworkPrefabRef frendPrefab;
     readonly Vector3 minSpawnPos = new Vector3(-13f, 1f, -13f);
     readonly Vector3 maxSpawnPos = new Vector3(13f, 1f, 13f);
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        frendPrefab = Resources.Load<GameObject>("Prefabs/Frend");
         if(frendPrefab == null) Debug.LogError("Frend prefabが見つかりません。");
-        StartCoroutine(SpawnRooutine());
+    }
+
+    public void Spawn(NetworkRunner runner){
+        StartCoroutine(SpawnRooutine(runner));
     }
 
     Vector3 RandomPos(Vector3 minSpawnPos, Vector3 maxSpawnPos){
@@ -25,10 +30,10 @@ public class SpawnFrend : MonoBehaviour
     }
 
     // spawnIntervalおきにランダムな場所にフレンドをスポーンさせる
-    IEnumerator SpawnRooutine(){
+    IEnumerator SpawnRooutine(NetworkRunner runner){
         while(true) {
             var spawnPos = RandomPos(minSpawnPos, maxSpawnPos);
-            Instantiate(frendPrefab, spawnPos, Quaternion.identity);
+            runner.Spawn(frendPrefab, spawnPos, Quaternion.identity, PlayerRef.None);
             yield return new WaitForSeconds(spawnInterval);
         }
 

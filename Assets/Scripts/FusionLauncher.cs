@@ -19,12 +19,17 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
     Destination destination;
     NetworkRunner networkRunner;
     
+    NetworkInputData data;
+
+    SpawnFrend spawnFrend;
 
     async void Start()
     {
         // NetworkRunner をシーン上に生成
         networkRunner = Instantiate(networkRunnerPrefab);
         networkRunner.AddCallbacks(this);
+        data = new NetworkInputData();
+        spawnFrend = GetComponent<SpawnFrend>();
         var result = await networkRunner.StartGame(new StartGameArgs
         {
             GameMode       = GameMode.AutoHostOrClient,   // ホストモードを使用
@@ -33,8 +38,7 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
 
         if (result.Ok){
             Debug.Log("接続成功");
-        networkRunner.Spawn(frendPrefab, new Vector3 (3,3,3), Quaternion.identity, PlayerRef.None);
-
+            spawnFrend.Spawn(networkRunner);
         }else {
             Debug.Log("接続失敗");
         }
@@ -46,6 +50,8 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
        // ランダムな生成位置（半径5の円の内部）を取得する
        var randomValue = UnityEngine.Random.insideUnitCircle * 5f;
        var spawnPosition = new Vector3(randomValue.x, 1f, randomValue.y);
+       // スポーン地点から動かないように行先にspawnPositionを設定
+       data.Direction = spawnPosition;
        // 参加したプレイヤーのアバターを生成する
        var avatar = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
        // プレイヤー（PlayerRef）とアバター（NetworkObject）を関連付ける
@@ -61,8 +67,7 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
     public void OnInput(NetworkRunner runner, NetworkInput input) {
-        var data = new NetworkInputData();
-        // マウスポジションの値を
+        // マウスポジションの値をセットしている
         data.Direction = destination.Get;
         input.Set(data);
     }
