@@ -9,7 +9,6 @@ public class Player : NetworkBehaviour
 
     [SerializeField]
     float yAxis;
-    public GameObject LastFrend { get; set; }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -19,7 +18,6 @@ public class Player : NetworkBehaviour
         if(yAxis == 0){
             throw new System.Exception("yAxisが0です。");
         }
-        LastFrend = this.gameObject;
     }
 
     // fusionから移動先の位置情報を受け取って移動する
