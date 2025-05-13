@@ -119,53 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &405717901
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 405717903}
-  - component: {fileID: 405717902}
-  m_Layer: 0
-  m_Name: FrendSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &405717902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 405717901}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 670d3f3b3739acf4db7cfe83cd5225a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnInterval: 10
-  frendPrefab:
-    RawGuidValue: 00000000000000000000000000000000
---- !u!4 &405717903
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 405717901}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &583742844
 GameObject:
   m_ObjectHideFlags: 0
@@ -179,6 +132,7 @@ GameObject:
   - component: {fileID: 583742847}
   - component: {fileID: 583742849}
   - component: {fileID: 583742851}
+  - component: {fileID: 583742852}
   m_Layer: 0
   m_Name: FusionLauncher
   m_TagString: Untagged
@@ -255,6 +209,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21a14490b1b64e74e8c5746ab4e88ba2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &583742852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 583742844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 670d3f3b3739acf4db7cfe83cd5225a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnInterval: 3
+  frendPrefab:
+    RawGuidValue: 5551b262cabf90a4dbf0a0546b511a6d
 --- !u!1 &648874455
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,5 +724,4 @@ SceneRoots:
   - {fileID: 648874457}
   - {fileID: 1527229891}
   - {fileID: 1997926750}
-  - {fileID: 405717903}
   - {fileID: 583742846}
