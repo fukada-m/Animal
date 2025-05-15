@@ -16,6 +16,9 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
     NetworkPrefabRef frendPrefab;
 
     [SerializeField]
+    NetworkPrefabRef enemyPrefab;
+
+    [SerializeField]
     Destination destination;
     NetworkRunner networkRunner;
     
@@ -39,10 +42,11 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
         if (result.Ok){
             Debug.Log("接続成功");
             spawnFrend.Spawn(networkRunner);
+            networkRunner.Spawn(enemyPrefab, new Vector3(3f,1f,3f), Quaternion.identity, PlayerRef.None);
+
         }else {
             Debug.Log("接続失敗");
         }
-
     }
     // セッションに参加したらアバターを作成する
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {
@@ -84,9 +88,6 @@ public class FusionLauncher : MonoBehaviour, INetworkRunnerCallbacks
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string,    object> data) {}
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)    {}
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player,    ArraySegment<byte> data) {}
-    public void OnSceneLoadDone(NetworkRunner runner) {
-        if(!runner.IsServer) { return; }
-        runner.Spawn(frendPrefab, new Vector3 (3,3,3), Quaternion.identity, PlayerRef.None);
-    }
+    public void OnSceneLoadDone(NetworkRunner runner) {}
     public void OnSceneLoadStart(NetworkRunner runner) {}
 }
