@@ -46,6 +46,6 @@ public class Enemy : NetworkBehaviour
                 destination = hit.position;
             }
         }
-        agent.SetDestination(destination);  // ← ここが通るのは Warp 成功時だけ！
+        agent.SetDestination(destination); 
     }
 }
