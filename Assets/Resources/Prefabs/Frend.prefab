@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 5494762871290484222}
   m_Layer: 0
   m_Name: Frend
-  m_TagString: Untagged
+  m_TagString: Frend
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

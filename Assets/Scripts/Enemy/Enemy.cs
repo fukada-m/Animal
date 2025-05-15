@@ -4,13 +4,15 @@ using Fusion;
 
 public class Enemy : NetworkBehaviour
 {
-    private NavMeshAgent agent;
-    private Vector3 destination;
+    NavMeshAgent agent;
+    public Vector3 Destination { get; set; }
+
     private const float radius = 11f;
 
     public override void Spawned()
     {
         agent = GetComponent<NavMeshAgent>();
+        if (agent == null) throw new System.Exception("Nav MeshAgentがアタッチされていません。");
 
         // NavMesh 上に Warp
         if (NavMesh.SamplePosition(transform.position, out var hit, 2f, NavMesh.AllAreas))
@@ -25,7 +27,7 @@ public class Enemy : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (destination == null) return;
+        if (Destination == null) return;
         if (!Object.HasStateAuthority) return;
 
         if (!agent.isOnNavMesh)
@@ -43,9 +45,9 @@ public class Enemy : NetworkBehaviour
 
             if (NavMesh.SamplePosition(raw, out var hit, 2f, NavMesh.AllAreas))
             {
-                destination = hit.position;
+                Destination = hit.position;
             }
         }
-        agent.SetDestination(destination); 
+        agent.SetDestination(Destination);
     }
 }
