@@ -13,10 +13,19 @@ public class DespawnThis : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Enemy"){
-            if(!Object.HasStateAuthority) return; // ホストだけが実行
+        if (other.gameObject.tag == "Enemy")
+        {
+            if (!Object.HasStateAuthority) return; // ホストだけが実行
             Runner.Despawn(netObj);
             Debug.Log("フレンドは削除されました。");
         }
     }
+
+    public void Despawn()
+    {
+        if (!Object.HasStateAuthority) return; // ホストだけが実行
+            Runner.Despawn(netObj);
+            Debug.Log("フレンドは削除されました。");
+    }
+    
 }

@@ -6,7 +6,6 @@ public class Frend : NetworkBehaviour
 {
     public Transform Target {get; set;}
     NavMeshAgent agent;
-
     float targetInterval = 3;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
