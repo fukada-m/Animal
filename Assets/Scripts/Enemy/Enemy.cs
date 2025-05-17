@@ -4,8 +4,8 @@ using Fusion;
 
 public class Enemy : NetworkBehaviour
 {
-    NavMeshAgent agent;
     public Vector3 Destination { get; set; }
+    NavMeshAgent agent;
 
     private const float radius = 11f;
 

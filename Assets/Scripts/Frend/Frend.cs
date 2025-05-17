@@ -5,6 +5,7 @@ using UnityEngine.AI;
 public class Frend : NetworkBehaviour
 {
     public Transform Target {get; set;}
+    public bool IsFellow { get; set; }
     NavMeshAgent agent;
     float targetInterval = 3;
 

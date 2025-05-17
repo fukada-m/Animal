@@ -15,9 +15,11 @@ public class RegisterTarget : MonoBehaviour
     // プレイヤーをターゲットとして登録する
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"[Trigger Enter] {other.gameObject.name} が入りました");
-        if (other.gameObject.tag == "Player"){
+        Debug.Log($"Frendのコライダーに{other.gameObject.name} が入りました");
+        if (other.gameObject.tag == "Player")
+        {
             frend.Target = other.transform;
+            frend.IsFellow = true;
         }
 
     }

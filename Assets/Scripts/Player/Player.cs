@@ -71,7 +71,7 @@ public class Player : NetworkBehaviour
         GameObject[] playerHasFrends = frends.Where(f => f.GetComponent<Frend>().Target == this.transform).ToArray();
         foreach (var f in frends)
         {
-            f.GetComponent<DespawnThis>().Despawn();
+            f.GetComponent<DespawnFrend>().Despawn();
         }
     }
 
