@@ -10,7 +10,7 @@ public class Player : NetworkBehaviour
 
     [SerializeField]
     float yAxis;
-    readonly int combinedNumber = 2;
+    readonly int combinedNumber = 5;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -50,7 +50,7 @@ public class Player : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // プレイヤーのフレンドの数が5人以上ならサイズアップ
+        // プレイヤーのフレンドの数がcombineNumber人以上ならサイズアップ
         GameObject[] frends = GameObject.FindGameObjectsWithTag("Frend");
         if (CountFrend(frends) >= combinedNumber)
         {
