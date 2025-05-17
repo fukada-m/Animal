@@ -10,10 +10,10 @@ public class Eye : MonoBehaviour
         if (enemy == null) throw new System.Exception("親にEnemyがアタッチされていません。");
     }
 
-    // Frendを見つけたら追いかける
+    // プレイヤーをFollowしていないFrendを見つけたら追いかける
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Frend")
+        if (other.gameObject.tag == "Frend" && !other.GetComponent<Frend>().IsFellow)
         {
             enemy.Destination = other.transform.position;
         }
