@@ -1,0 +1,149 @@
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using Fusion;
+using Fusion.Sockets;
+using System.Collections.Generic;
+using System;
+using TMPro;
+using System.Linq;
+
+public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
+{
+    [SerializeField]
+    TMP_InputField roomNameInput;
+    [SerializeField]
+    Transform roomListContainer;
+    [SerializeField]
+    GameObject roomButtonPrefab;
+    NetworkRunner runner;
+    NetworkSceneManagerDefault sceneManager;
+    List<string> currentSessionNames = new List<string>();
+    Dictionary<string, GameObject> joinButtons = new Dictionary<string, GameObject>();
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    async void Start()
+    {
+        runner = GetComponent<NetworkRunner>();
+        sceneManager = GetComponent<NetworkSceneManagerDefault>();
+        // ゲーム起動時にロビー（セッション一覧）に参加
+        var result = await runner.JoinSessionLobby(SessionLobby.ClientServer);
+        if (!result.Ok)
+            Debug.LogError($"ロビーに参加失敗: {result.ShutdownReason}");
+        else
+            Debug.Log("ロビーに参加成功");
+    }
+
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+    public void OnShutdown(NetworkRunner runner, ShutdownReason reason) { }
+    public void OnDisconnectedFromServer(NetworkRunner runner) { }
+    public void OnConnectedToServer(NetworkRunner runner) { }
+    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
+    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
+    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
+    public void OnSceneLoadDone(NetworkRunner runner) { }
+    public void OnSceneLoadStart(NetworkRunner runner) { }
+
+    /// <summary>
+    /// ロビー上のセッション一覧が更新されるたびに呼ばれるコールバック
+    /// </summary>
+    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
+    {
+        List<string> newNames = sessionList.Select(s => s.Name).ToList();
+        // ルームが増えていたらプレハブをUIに追加
+        foreach (var name in newNames.Except(currentSessionNames))
+        {
+            CreateJoinButton(name);
+        }
+
+        // ルームが消えていたらUIからプレハブを削除
+        foreach (var name in currentSessionNames.Except(newNames))
+        {
+            DestroyJoinButton(name);
+        }
+        // キャッシュを更新
+        currentSessionNames = newNames;
+    }
+
+    public void OnClickCreateRoom()
+    {
+        CreateRoom(roomNameInput.text);
+    }
+
+    async void CreateRoom(string roomName)
+    {
+        var startResult = await runner.StartGame(new StartGameArgs
+        {
+            GameMode = GameMode.Host,           // または Shared
+            SessionName = roomName,                // 任意のルーム名
+            Scene = SceneManager.GetActiveScene().buildIndex,
+            SceneManager = sceneManager
+        });
+
+        if (startResult.Ok)
+            Debug.Log("ルーム作成 & ホスト開始");
+        else
+            Debug.LogError($"ルーム作成失敗: {startResult.ShutdownReason}");
+    }
+
+    /// <summary>
+    /// ルーム名からボタンを生成しテキストはsessionNameをセットし、Click 時に JoinRoom を呼ぶ
+    /// </summary>
+    void CreateJoinButton(string sessionName)
+    {
+        var joinButton = Instantiate(roomButtonPrefab, roomListContainer);
+        var text = joinButton.GetComponentInChildren<TextMeshProUGUI>();
+        if (text == null)
+            throw new SystemException("TMProがアタッチされていません");
+        else
+            text.text = sessionName;
+        var button = joinButton.GetComponent<Button>();
+        button.onClick.AddListener(() =>
+        {
+            JoinRoom(sessionName);
+        });
+        joinButtons.Add(sessionName, joinButton);
+    }
+
+    /// <summary>
+    /// 指定ルーム名のボタンを削除する
+    /// </summary>
+    void DestroyJoinButton(string sessionName)
+    {
+        if (joinButtons.TryGetValue(sessionName, out var joinButoon))
+        {
+            Destroy(joinButoon);
+            joinButtons.Remove(sessionName);
+        }
+    }
+    
+    /// <summary>
+    /// ルーム（セッション）にクライアントとして参加するメソッド
+    /// </summary>
+    public async void JoinRoom(string sessionName)
+    {
+        var result = await runner.StartGame(new StartGameArgs
+        {
+            GameMode = GameMode.Client,
+            SessionName = sessionName,
+            DisableClientSessionCreation = true,  // 存在しない名前ならエラーにする
+            Scene = SceneManager.GetActiveScene().buildIndex,
+            SceneManager = sceneManager
+        });
+
+        if (!result.Ok)
+        {
+            Debug.LogError($"ルーム参加失敗: {result.ShutdownReason}");
+        }
+        else
+        {
+            Debug.Log($"セッション「{sessionName}」への参加成功");
+        }
+    }
+}
