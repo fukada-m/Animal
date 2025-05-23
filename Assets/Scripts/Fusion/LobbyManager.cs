@@ -13,9 +13,17 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     TMP_InputField roomNameInput;
     [SerializeField]
+    Button createRoomButton;
+    [SerializeField]
     Transform roomListContainer;
     [SerializeField]
     GameObject roomButtonPrefab;
+    [SerializeField]
+    GameObject lobbyUI;
+    [SerializeField]
+    GameObject sessionUI;
+    [SerializeField]
+    UpdateSessionEvent updateSessionEvent;
     NetworkRunner runner;
     NetworkSceneManagerDefault sceneManager;
     List<string> currentSessionNames = new List<string>();
@@ -24,6 +32,8 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     async void Start()
     {
+        lobbyUI.SetActive(true);
+        sessionUI.SetActive(false);
         runner = GetComponent<NetworkRunner>();
         sceneManager = GetComponent<NetworkSceneManagerDefault>();
         // ゲーム起動時にロビー（セッション一覧）に参加
@@ -33,22 +43,6 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         else
             Debug.Log("ロビーに参加成功");
     }
-
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnShutdown(NetworkRunner runner, ShutdownReason reason) { }
-    public void OnDisconnectedFromServer(NetworkRunner runner) { }
-    public void OnConnectedToServer(NetworkRunner runner) { }
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
-    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
-    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
-    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
-    public void OnSceneLoadStart(NetworkRunner runner) { }
 
     /// <summary>
     /// ロビー上のセッション一覧が更新されるたびに呼ばれるコールバック
@@ -74,8 +68,12 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnClickCreateRoom()
     {
         CreateRoom(roomNameInput.text);
+        createRoomButton.interactable = false;
     }
 
+    /// <summary>
+    /// ホストモードでセッションルームを作成する
+    /// </summary>
     async void CreateRoom(string roomName)
     {
         var startResult = await runner.StartGame(new StartGameArgs
@@ -87,9 +85,17 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         });
 
         if (startResult.Ok)
+        {
             Debug.Log("ルーム作成 & ホスト開始");
+            lobbyUI.SetActive(false);
+            sessionUI.SetActive(true);
+            updateSessionEvent.UpdateSeesion();
+        }
         else
+        {
             Debug.LogError($"ルーム作成失敗: {startResult.ShutdownReason}");
+            createRoomButton.interactable = true;
+        }
     }
 
     /// <summary>
@@ -144,6 +150,27 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         else
         {
             Debug.Log($"セッション「{sessionName}」への参加成功");
+            lobbyUI.SetActive(false);
+            sessionUI.SetActive(true);
+            updateSessionEvent.UpdateSeesion();
         }
     }
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        updateSessionEvent.UpdateSeesion();
+    }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+    public void OnShutdown(NetworkRunner runner, ShutdownReason reason) { }
+    public void OnDisconnectedFromServer(NetworkRunner runner) { }
+    public void OnConnectedToServer(NetworkRunner runner) { }
+    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
+    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
+    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
+    public void OnSceneLoadDone(NetworkRunner runner) { }
+    public void OnSceneLoadStart(NetworkRunner runner) { }
 }
