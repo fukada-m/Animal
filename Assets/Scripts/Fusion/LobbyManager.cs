@@ -37,6 +37,12 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         runner = GetComponent<NetworkRunner>();
         sceneManager = GetComponent<NetworkSceneManagerDefault>();
         // ゲーム起動時にロビー（セッション一覧）に参加
+        JoinLobby();
+
+    }
+
+    async void JoinLobby()
+    {
         var result = await runner.JoinSessionLobby(SessionLobby.ClientServer);
         if (!result.Ok)
             Debug.LogError($"ロビーに参加失敗: {result.ShutdownReason}");
@@ -162,7 +168,12 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnShutdown(NetworkRunner runner, ShutdownReason reason) { }
+    public void OnShutdown(NetworkRunner runner, ShutdownReason reason)
+    {
+        lobbyUI.SetActive(true);
+        createRoomButton.interactable = true;
+        sessionUI.SetActive(false);    
+    }
     public void OnDisconnectedFromServer(NetworkRunner runner) { }
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }

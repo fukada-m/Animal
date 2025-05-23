@@ -16,9 +16,9 @@ public class SessionManager : MonoBehaviour
 
     void Start()
     {
-        updateSessionEvent.UpdateSession.Subscribe(_ => SetSessionInfoUI()).AddTo(this);   
+        updateSessionEvent.UpdateSession.Subscribe(_ => SetSessionInfoUI()).AddTo(this);
     }
-    
+
     void SetSessionInfoUI()
     {
         var sessionInfo = runner.SessionInfo;
@@ -30,5 +30,11 @@ public class SessionManager : MonoBehaviour
         sessionNameText.text = $"ルーム名：{sessionInfo.Name}";
         playerCountText.text = $"参加者数：{sessionInfo.PlayerCount}";
 
+    }
+
+    public void OnclickReturnButoon()
+    {
+        // セッションを破棄するがrunnerがアタッチしてあるオブジェクトは残す
+        runner.Shutdown(destroyGameObject: false);
     }
 }
