@@ -80,6 +80,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     /// </summary>
     async void CreateRoom(string roomName)
     {
+        if (roomName == "") roomName = $"未設定{UnityEngine.Random.Range(0,99)}";
         var startResult = await runner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Host,
