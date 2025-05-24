@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System;
 using TMPro;
 using System.Linq;
-
+// TODO ボタンクリックしたことへのメッセージデフォルトのルーム名を用意する
 public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField]
@@ -24,23 +24,31 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     GameObject sessionUI;
     [SerializeField]
     UpdateSessionEvent updateSessionEvent;
+    [SerializeField]
+    NetworkRunner runnerPref;
     NetworkRunner runner;
     NetworkSceneManagerDefault sceneManager;
     List<string> currentSessionNames = new List<string>();
     Dictionary<string, GameObject> joinButtons = new Dictionary<string, GameObject>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    async void Start()
+    void Start()
     {
+        // NetworkRunnerの初期処理
+        runner = Instantiate(runnerPref);
+        if (runner == null) Debug.LogError("NetworkRunnerが見つかりません。");
+        runner.ProvideInput = true;
+        runner.AddCallbacks(this);
+        sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
+        // UI描画
         lobbyUI.SetActive(true);
         sessionUI.SetActive(false);
-        runner = GetComponent<NetworkRunner>();
-        sceneManager = GetComponent<NetworkSceneManagerDefault>();
-        // ゲーム起動時にロビー（セッション一覧）に参加
         JoinLobby();
-
     }
 
+    /// <summary>
+    /// ロビーに参加
+    /// </summary>
     async void JoinLobby()
     {
         var result = await runner.JoinSessionLobby(SessionLobby.ClientServer);
@@ -84,8 +92,8 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         var startResult = await runner.StartGame(new StartGameArgs
         {
-            GameMode = GameMode.Host,           // または Shared
-            SessionName = roomName,                // 任意のルーム名
+            GameMode = GameMode.Host,
+            SessionName = roomName,
             Scene = SceneManager.GetActiveScene().buildIndex,
             SceneManager = sceneManager
         });
@@ -93,6 +101,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         if (startResult.Ok)
         {
             Debug.Log("ルーム作成 & ホスト開始");
+            // UIの表示切替
             lobbyUI.SetActive(false);
             sessionUI.SetActive(true);
             updateSessionEvent.UpdateSeesion();
@@ -106,6 +115,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 
     /// <summary>
     /// ルーム名からボタンを生成しテキストはsessionNameをセットし、Click 時に JoinRoom を呼ぶ
+    /// JoinButtonはDictionaryで管理されセッションがなくなると削除される
     /// </summary>
     void CreateJoinButton(string sessionName)
     {
@@ -140,25 +150,42 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     /// </summary>
     public async void JoinRoom(string sessionName)
     {
-        var result = await runner.StartGame(new StartGameArgs
+        if (!currentSessionNames.Contains(sessionName))
         {
-            GameMode = GameMode.Client,
-            SessionName = sessionName,
-            DisableClientSessionCreation = true,  // 存在しない名前ならエラーにする
-            Scene = SceneManager.GetActiveScene().buildIndex,
-            SceneManager = sceneManager
-        });
-
-        if (!result.Ok)
-        {
-            Debug.LogError($"ルーム参加失敗: {result.ShutdownReason}");
+            Debug.LogWarning($"[{sessionName}] はもう存在しません。ロビーを再取得します。");
+            await runner.JoinSessionLobby(SessionLobby.ClientServer);
+            return;
         }
-        else
+        try
         {
-            Debug.Log($"セッション「{sessionName}」への参加成功");
-            lobbyUI.SetActive(false);
-            sessionUI.SetActive(true);
-            updateSessionEvent.UpdateSeesion();
+
+            var result = await runner.StartGame(new StartGameArgs
+            {
+                GameMode = GameMode.Client,
+                SessionName = sessionName,
+                DisableClientSessionCreation = true,  // 存在しない名前ならエラーにする
+                Scene = SceneManager.GetActiveScene().buildIndex,
+                SceneManager = sceneManager
+            });
+
+            if (!result.Ok)
+            {
+                Debug.LogError($"ルーム参加失敗: {result.ShutdownReason}");
+            }
+            else
+            {
+                Debug.Log($"セッション「{sessionName}」への参加成功");
+                //UIの切替
+                lobbyUI.SetActive(false);
+                sessionUI.SetActive(true);
+                updateSessionEvent.UpdateSeesion();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"JoinRoom例外: {ex.Message}");
+            // クラッシュしそうならロビーに戻す
+            await runner.JoinSessionLobby(SessionLobby.ClientServer);
         }
     }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -170,9 +197,16 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason reason)
     {
+        // UI切替
         lobbyUI.SetActive(true);
+        sessionUI.SetActive(false);
         createRoomButton.interactable = true;
-        sessionUI.SetActive(false);    
+        // NetworkRunnerを再生成してロビーに参加
+        this.runner = Instantiate(runnerPref);
+        this.runner.ProvideInput = true;
+        this.runner.AddCallbacks(this);
+        sceneManager = this.runner.GetComponent<NetworkSceneManagerDefault>();
+        JoinLobby();
     }
     public void OnDisconnectedFromServer(NetworkRunner runner) { }
     public void OnConnectedToServer(NetworkRunner runner) { }

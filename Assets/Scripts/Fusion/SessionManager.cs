@@ -2,13 +2,12 @@ using Fusion;
 using TMPro;
 using UnityEngine;
 using UniRx;
+using System.Threading.Tasks;
 
 public class SessionManager : MonoBehaviour
 {
     [SerializeField]
     UpdateSessionEvent updateSessionEvent;
-    [SerializeField]
-    NetworkRunner runner;
     [SerializeField]
     TextMeshProUGUI sessionNameText;
     [SerializeField]
@@ -19,8 +18,11 @@ public class SessionManager : MonoBehaviour
         updateSessionEvent.UpdateSession.Subscribe(_ => SetSessionInfoUI()).AddTo(this);
     }
 
+    [System.Obsolete]
     void SetSessionInfoUI()
     {
+        var runner = FindObjectOfType<NetworkRunner>().GetComponent<NetworkRunner>();
+        if (runner == null) Debug.LogError("NetworkRunnerが見つかりません。");
         var sessionInfo = runner.SessionInfo;
         if (!sessionInfo.IsValid)
         {
@@ -29,12 +31,21 @@ public class SessionManager : MonoBehaviour
         }
         sessionNameText.text = $"ルーム名：{sessionInfo.Name}";
         playerCountText.text = $"参加者数：{sessionInfo.PlayerCount}";
-
     }
 
-    public void OnclickReturnButoon()
+    public async void OnclickReturnButoon()
     {
-        // セッションを破棄するがrunnerがアタッチしてあるオブジェクトは残す
-        runner.Shutdown(destroyGameObject: false);
+         var runner = FindObjectOfType<NetworkRunner>().GetComponent<NetworkRunner>();
+        if (runner == null) Debug.LogError("NetworkRunnerが見つかりません。");
+        // ホストは自分以外のプレイヤーをキックする
+        if (runner.IsServer && runner.IsRunning)
+        {
+            foreach (var player in runner.ActivePlayers)
+            {
+                if (player != runner.LocalPlayer)
+                    runner.Disconnect(player);
+            }
+        }
+        await runner.Shutdown();
     }
 }
