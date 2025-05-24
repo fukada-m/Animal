@@ -32,12 +32,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // NetworkRunnerの初期処理
-        runner = Instantiate(runnerPref);
-        if (runner == null) Debug.LogError("NetworkRunnerが見つかりません。");
-        runner.ProvideInput = true;
-        runner.AddCallbacks(this);
-        sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
+        CreateRunner();
         JoinLobby();
     }
 
@@ -151,7 +146,6 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         }
         try
         {
-
             var result = await runner.StartGame(new StartGameArgs
             {
                 GameMode = GameMode.Client,
@@ -180,6 +174,15 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
             await runner.JoinSessionLobby(SessionLobby.ClientServer);
         }
     }
+
+    void CreateRunner()
+    {
+        runner = Instantiate(runnerPref);
+        if (runner == null) Debug.LogError("NetworkRunnerが見つかりません。");
+        runner.ProvideInput = true;
+        runner.AddCallbacks(this);
+        sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
+    }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         updateSessionEvent.UpdateSeesion();
@@ -191,11 +194,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         dispUI.DispLobbyUI();
         createRoomButton.interactable = true;
-        // NetworkRunnerを再生成してロビーに参加
-        this.runner = Instantiate(runnerPref);
-        this.runner.ProvideInput = true;
-        this.runner.AddCallbacks(this);
-        sceneManager = this.runner.GetComponent<NetworkSceneManagerDefault>();
+        CreateRunner();
         JoinLobby();
     }
     public void OnDisconnectedFromServer(NetworkRunner runner) { }
