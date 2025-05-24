@@ -19,13 +19,11 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField]
     GameObject roomButtonPrefab;
     [SerializeField]
-    GameObject lobbyUI;
-    [SerializeField]
-    GameObject sessionUI;
-    [SerializeField]
     UpdateSessionEvent updateSessionEvent;
     [SerializeField]
     NetworkRunner runnerPref;
+    [SerializeField]
+    DispUI dispUI;
     NetworkRunner runner;
     NetworkSceneManagerDefault sceneManager;
     List<string> currentSessionNames = new List<string>();
@@ -40,9 +38,6 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         runner.ProvideInput = true;
         runner.AddCallbacks(this);
         sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
-        // UI描画
-        lobbyUI.SetActive(true);
-        sessionUI.SetActive(false);
         JoinLobby();
     }
 
@@ -101,9 +96,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         if (startResult.Ok)
         {
             Debug.Log("ルーム作成 & ホスト開始");
-            // UIの表示切替
-            lobbyUI.SetActive(false);
-            sessionUI.SetActive(true);
+            dispUI.DispSessionUI();
             updateSessionEvent.UpdateSeesion();
         }
         else
@@ -176,8 +169,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
             {
                 Debug.Log($"セッション「{sessionName}」への参加成功");
                 //UIの切替
-                lobbyUI.SetActive(false);
-                sessionUI.SetActive(true);
+                dispUI.DispSessionUI();
                 updateSessionEvent.UpdateSeesion();
             }
         }
@@ -197,9 +189,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason reason)
     {
-        // UI切替
-        lobbyUI.SetActive(true);
-        sessionUI.SetActive(false);
+        dispUI.DispLobbyUI();
         createRoomButton.interactable = true;
         // NetworkRunnerを再生成してロビーに参加
         this.runner = Instantiate(runnerPref);
