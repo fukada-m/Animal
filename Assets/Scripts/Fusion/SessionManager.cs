@@ -37,7 +37,7 @@ public class SessionManager : MonoBehaviour
     {
          var runner = FindObjectOfType<NetworkRunner>().GetComponent<NetworkRunner>();
         if (runner == null) Debug.LogError("NetworkRunnerが見つかりません。");
-        // ホストは自分以外のプレイヤーをキックする
+        // 自分がホストの場合は自分以外のプレイヤーをキックする
         if (runner.IsServer && runner.IsRunning)
         {
             foreach (var player in runner.ActivePlayers)
