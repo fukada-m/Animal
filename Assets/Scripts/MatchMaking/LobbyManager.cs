@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System;
 using TMPro;
 using System.Linq;
-// TODO ボタンクリックしたことへのメッセージデフォルトのルーム名を用意する
+// TODO ボタンクリックしたことへのメッセージ
 public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField]
-    TMP_InputField roomNameInput;
+    InputField roomNameInput;
     [SerializeField]
     Button createRoomButton;
     [SerializeField]

@@ -1,17 +1,16 @@
 using Fusion;
-using TMPro;
 using UnityEngine;
 using UniRx;
-using System.Threading.Tasks;
+using UnityEngine.UI;
 
 public class SessionManager : MonoBehaviour
 {
     [SerializeField]
     UpdateSessionEvent updateSessionEvent;
     [SerializeField]
-    TextMeshProUGUI sessionNameText;
+    Text sessionNameText;
     [SerializeField]
-    TextMeshProUGUI playerCountText;
+    Text playerCountText;
 
     void Start()
     {
@@ -29,8 +28,8 @@ public class SessionManager : MonoBehaviour
             Debug.LogWarning("SessionInfo がまだ有効ではありません");
             return;
         }
-        sessionNameText.text = $"ルーム名：{sessionInfo.Name}";
-        playerCountText.text = $"参加者数：{sessionInfo.PlayerCount}";
+        sessionNameText.text = $"{sessionInfo.Name}";
+        playerCountText.text = $"{sessionInfo.PlayerCount}";
     }
 
     public async void OnclickReturnButoon()
