@@ -11,6 +11,8 @@ public class SessionManager : MonoBehaviour
     Text sessionNameText;
     [SerializeField]
     Text playerCountText;
+    [SerializeField]
+    Text returnButton;
 
     void Start()
     {
@@ -30,11 +32,12 @@ public class SessionManager : MonoBehaviour
         }
         sessionNameText.text = $"{sessionInfo.Name}";
         playerCountText.text = $"{sessionInfo.PlayerCount}";
+        SetReturnButtonMessage(runner);
     }
 
     public async void OnclickReturnButoon()
     {
-         var runner = FindObjectOfType<NetworkRunner>().GetComponent<NetworkRunner>();
+        var runner = FindObjectOfType<NetworkRunner>().GetComponent<NetworkRunner>();
         if (runner == null) Debug.LogError("NetworkRunnerが見つかりません。");
         // 自分がホストの場合は自分以外のプレイヤーをキックする
         if (runner.IsServer && runner.IsRunning)
@@ -46,5 +49,13 @@ public class SessionManager : MonoBehaviour
             }
         }
         await runner.Shutdown();
+    }
+
+    void SetReturnButtonMessage(NetworkRunner runner)
+    {
+        if (runner.IsServer)
+            returnButton.text = "ルームを解散する";
+        else
+            returnButton.text = "ルームを抜ける";
     }
 }
