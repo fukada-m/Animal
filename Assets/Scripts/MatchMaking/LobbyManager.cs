@@ -5,8 +5,8 @@ using Fusion;
 using Fusion.Sockets;
 using System.Collections.Generic;
 using System;
-using TMPro;
 using System.Linq;
+
 // TODO ボタンクリックしたことへのメッセージ
 public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -24,6 +24,8 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     NetworkRunner runnerPref;
     [SerializeField]
     DispUI dispUI;
+    [SerializeField]
+    Text playerMessage;
     NetworkRunner runner;
     NetworkSceneManagerDefault sceneManager;
     List<string> currentSessionNames = new List<string>();
@@ -32,6 +34,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        playerMessage.text = "ロビー情報を取得中です...";
         CreateRunner();
         JoinLobby();
     }
@@ -45,7 +48,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         if (!result.Ok)
             Debug.LogError($"ロビーに参加失敗: {result.ShutdownReason}");
         else
-            Debug.Log("ロビーに参加成功");
+            playerMessage.text = "ロビーに参加しました。";
     }
 
     /// <summary>
@@ -80,7 +83,8 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     /// </summary>
     async void CreateRoom(string roomName)
     {
-        if (roomName == "") roomName = $"未設定{UnityEngine.Random.Range(0,99)}";
+        playerMessage.text = "ルームを作成中です...";
+        if (roomName == "") roomName = $"未設定{UnityEngine.Random.Range(0, 99)}";
         var startResult = await runner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Host,
@@ -92,12 +96,14 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         if (startResult.Ok)
         {
             Debug.Log("ルーム作成 & ホスト開始");
+            playerMessage.text = "ルームを作成しました。";
             dispUI.DispSessionUI();
             updateSessionEvent.UpdateSeesion();
         }
         else
         {
             Debug.LogError($"ルーム作成失敗: {startResult.ShutdownReason}");
+            playerMessage.text = "ルームの作成に失敗しました。";
             createRoomButton.interactable = true;
         }
     }
@@ -111,7 +117,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         var joinButton = Instantiate(roomButtonPrefab, roomListContainer);
         var text = joinButton.GetComponentInChildren<Text>();
         if (text == null)
-            throw new SystemException("TMProがアタッチされていません");
+            throw new SystemException("Textがアタッチされていません");
         else
             text.text = sessionName;
         var button = joinButton.GetComponent<Button>();
@@ -142,6 +148,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         if (!currentSessionNames.Contains(sessionName))
         {
             Debug.LogWarning($"[{sessionName}] はもう存在しません。ロビーを再取得します。");
+            playerMessage.text = $"[{sessionName}]は存在しませんでした。";
             await runner.JoinSessionLobby(SessionLobby.ClientServer);
             return;
         }
@@ -159,6 +166,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
             if (!result.Ok)
             {
                 Debug.LogError($"ルーム参加失敗: {result.ShutdownReason}");
+                playerMessage.text = "ルームの参加に失敗しました。";
             }
             else
             {
@@ -166,6 +174,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
                 //UIの切替
                 dispUI.DispSessionUI();
                 updateSessionEvent.UpdateSeesion();
+                playerMessage.text = $"[{sessionName}]への参加が成功しました。";
             }
         }
         catch (System.Exception ex)
@@ -173,6 +182,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
             Debug.LogError($"JoinRoom例外: {ex.Message}");
             // クラッシュしそうならロビーに戻す
             await runner.JoinSessionLobby(SessionLobby.ClientServer);
+            playerMessage.text = "通信エラー：ロビーに再接続します。";
         }
     }
 
@@ -184,6 +194,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
         runner.AddCallbacks(this);
         sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
     }
+
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         updateSessionEvent.UpdateSeesion();
@@ -193,6 +204,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason reason)
     {
+        playerMessage.text = "ロビーに再接続します。";
         dispUI.DispLobbyUI();
         createRoomButton.interactable = true;
         CreateRunner();
