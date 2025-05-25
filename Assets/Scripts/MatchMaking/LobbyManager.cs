@@ -109,7 +109,7 @@ public class LobbyManager : MonoBehaviour, INetworkRunnerCallbacks
     void CreateJoinButton(string sessionName)
     {
         var joinButton = Instantiate(roomButtonPrefab, roomListContainer);
-        var text = joinButton.GetComponentInChildren<TextMeshProUGUI>();
+        var text = joinButton.GetComponentInChildren<Text>();
         if (text == null)
             throw new SystemException("TMProがアタッチされていません");
         else
